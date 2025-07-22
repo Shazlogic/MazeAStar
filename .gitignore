@@ -1,0 +1,17 @@
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+[Nn]uget/
+.vs/
+.vscode/
+*.user
+*.suo
+*.cache
+*.pdb
+*.exe
+*.dll
+*.nupkg
+*.swp
+appsettings.*.json
+launchSettings.json
