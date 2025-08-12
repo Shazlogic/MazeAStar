@@ -1,0 +1,17 @@
+{
+  "Player": {
+    "X": 1,
+    "Y": 1
+  },
+  "Obstacle": {
+    "X": 5,
+    "Y": 1,
+    "Symbol": "!"
+  },
+  "Enemy": {
+    "X": 17,
+    "Y": 1,
+    "Symbol": "$"
+  },
+  "GameTickDelayMs": 200
+}

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using MazeAStar.Units;
+using System.Collections;
 
 namespace MazeAStar
 {

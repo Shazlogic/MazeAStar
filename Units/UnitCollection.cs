@@ -1,8 +1,8 @@
 ﻿using System.Collections;
 
-namespace MazeAStar
+namespace MazeAStar.Units
 {
-    internal class Units : IEnumerable
+    internal class UnitCollection : IEnumerable
     {
         private List<Unit> _units = new();
 

@@ -1,15 +1,13 @@
-﻿namespace MazeAStar
+﻿namespace MazeAStar.Input
 {
-    internal class Player : Unit
+    internal class ConsoleInput : IMoveInput
     {
-        private char[,] _map;
+        public event Action MoveUp;
+        public event Action MoveDown;
+        public event Action MoveLeft;
+        public event Action MoveRight;
 
-        public Player(int startX, int startY, ConsoleRenderer renderer, char[,] map) : base(startX, startY, '@', renderer)
-        {
-            _map = map;
-        }
-
-        public override void Update()
+        public void Update()
         {
             ConsoleKeyInfo keyInfo;
             if (Console.KeyAvailable)
@@ -19,16 +17,16 @@
                 switch (keyInfo.Key)
                 {
                     case ConsoleKey.UpArrow:
-                        TryMoveUp(_map);
+                        MoveUp?.Invoke();
                         break;
                     case ConsoleKey.DownArrow:
-                        TryMoveDown(_map);
+                        MoveDown?.Invoke();
                         break;
                     case ConsoleKey.LeftArrow:
-                        TryMoveLeft(_map);
+                        MoveLeft?.Invoke();
                         break;
                     case ConsoleKey.RightArrow:
-                        TryMoveRight(_map);
+                        MoveRight?.Invoke();
                         break;
                 }
             }

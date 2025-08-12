@@ -1,102 +1,81 @@
-﻿namespace MazeAStar
+﻿using MazeAStar.Config;
+using MazeAStar.Core;
+using MazeAStar.Input;
+using MazeAStar.Rendering;
+using MazeAStar.Units;
+using System.Threading.Tasks;
+
+namespace MazeAStar
 {
     internal class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
-            char[,] map = new[,]
-            {
-                {'#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#'},
-                {'#', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
-                {'#', ' ', '#', '#', ' ', '#', ' ', '#', ' ', '#', ' ', '#', '#', '#', '#', '#', ' ', '#', ' ', '#'},
-                {'#', ' ', '#', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', '#', ' ', '#'},
-                {'#', ' ', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', ' ', '#', ' ', '#', ' ', '#', ' ', '#'},
-                {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', '#', ' ', '#', ' ', '#', ' ', '#'},
-                {'#', '#', '#', '#', '#', '#', ' ', '#', '#', '#', ' ', '#', ' ', '#', ' ', '#', ' ', '#', ' ', '#'},
-                {'#', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', '#', ' ', '#', ' ', ' ', ' ', '#', ' ', '#'},
-                {'#', ' ', '#', '#', '#', '#', '#', '#', ' ', '#', '#', '#', ' ', '#', '#', '#', '#', '#', ' ', '#'},
-                {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
-                {'#', '#', '#', '#', '#', ' ', '#', '#', '#', '#', ' ', '#', '#', '#', '#', '#', '#', '#', '#', '#'},
-                {'#', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
-                {'#', ' ', '#', '#', '#', '#', '#', ' ', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', ' ', '#'},
-                {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', '#'},
-                {'#', '#', '#', '#', '#', '#', '#', ' ', '#', ' ', '#', '#', '#', '#', '#', '#', ' ', '#', ' ', '#'},
-                {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', '#', ' ', '#'},
-                {'#', ' ', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', ' ', '#', ' ', '#', ' ', '#'},
-                {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
-                {'#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#'}
-            };
+            var config = GameConfig.Load();
 
-            char[,] reverseMap = ReverseMapRows(map);
+            var renderer = new ConsoleRenderer();
+            var input = new ConsoleInput();
 
-            int playerX = 1;
-            int playerY = 1;
+            InitializeMap(GameData.GetInstance().GetMap(), renderer);
 
-            ConsoleRenderer renderer = new ConsoleRenderer();
-            SetMapPixels(reverseMap, renderer);
-            Player player = new Player(playerX, playerY, renderer, reverseMap);
-            VerticalObstacle obstacle = new VerticalObstacle(5, 1, '!', renderer, reverseMap);
-            SmartEnemy enemy = new SmartEnemy(17, 1, '$', renderer, reverseMap, player);
-
-            Units units = new Units();
-            units.Add(player);
-            units.Add(obstacle);
-            units.Add(enemy);
+            var player = new Player(config.Player.X, config.Player.Y, renderer, input);
+            var obstacle = new VerticalObstacle(config.Obstacle.X, config.Obstacle.Y, config.Obstacle.Symbol, renderer);
+            var enemy = new SmartEnemy(config.Enemy.X, config.Enemy.Y, config.Enemy.Symbol, renderer, player);
+            var units = new List<Unit> { player, obstacle, enemy };
 
             renderer.Render();
 
             while (true)
             {
-                foreach (Unit unit in units)
-                {
-                    unit.Update();
-                }
-
+                input.Update();
+                UpdateUnits(units);
                 renderer.Render();
 
-                Thread.Sleep(200);
-
-                foreach (Unit unit in units)
+                if (CheckCollisions(player, units))
                 {
-                    if (unit == player)
-                        continue;
-
-                    if (player.X == unit.X && player.Y == unit.Y)
-                        GameOver();
+                    GameOver();
                 }
+
+                await Task.Delay(config.GameTickDelayMs);
             }
         }
 
-        static void GameOver()
+        private static void GameOver()
         {
+            Console.Clear();
+            Console.WriteLine("Game Over!");
             Environment.Exit(0);
         }
 
-        static char[,] ReverseMapRows(char[,] map)
+        private static void InitializeMap(char[,] map, ConsoleRenderer renderer)
         {
-            int rows = map.GetLength(0);
-            int cols = map.GetLength(1);
-            char[,] flipped = new char[rows, cols];
-
-            for (int i = 0; i < rows; i++)
+            for (int y = 0; y < map.GetLength(0); y++)
             {
-                for (int j = 0; j < cols; j++)
+                for (int x = 0; x < map.GetLength(1); x++)
                 {
-                    flipped[rows - 1 - i, j] = map[i, j];
+                    renderer.SetPixel(y, x, map[y, x]);
                 }
             }
-            return flipped;
         }
 
-        static void SetMapPixels(char[,] map, ConsoleRenderer renderer)
+        private static void UpdateUnits(IEnumerable<Unit> units)
         {
-            for (int i = 0; i < map.GetLength(0); i++)
+            foreach (var unit in units)
             {
-                for (int j = 0; j < map.GetLength(1); j++)
+                unit.Update();
+            }
+        }
+
+        private static bool CheckCollisions(Player player, IEnumerable<Unit> units)
+        {
+            foreach (var unit in units)
+            {
+                if (unit != player && player.X == unit.X && player.Y == unit.Y)
                 {
-                    renderer.SetPixel(i, j, map[i, j]);
+                    return true;
                 }
             }
+            return false;
         }
     }
 }

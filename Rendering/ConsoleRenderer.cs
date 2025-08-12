@@ -1,4 +1,4 @@
-﻿namespace MazeAStar
+﻿namespace MazeAStar.Rendering
 {
     public class ConsoleRenderer
     {

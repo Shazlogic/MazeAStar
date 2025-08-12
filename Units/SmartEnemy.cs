@@ -1,15 +1,16 @@
-﻿namespace MazeAStar
+﻿using MazeAStar.Core;
+using MazeAStar.Rendering;
+
+namespace MazeAStar.Units
 {
     public class SmartEnemy: Unit
     {
-        private char[,] _map;
         private Unit _target;
         private int[] dx = { -1, 0, 1, 0 };
         private int[] dy = { 0, 1, 0, -1 };
 
-        public SmartEnemy(int startX, int startY, char symbol, ConsoleRenderer renderer, char[,] map, Unit target) : base(startX, startY, symbol, renderer)
+        public SmartEnemy(int startX, int startY, char symbol, ConsoleRenderer renderer, Unit target) : base(startX, startY, symbol, renderer)
         {
-            _map = map;
             _target = target;
         }
 
@@ -21,7 +22,7 @@
                 return;
 
             Node nextPosition = path[1];
-            TryChangePosition(nextPosition.X, nextPosition.Y, _map);
+            TryChangePosition(nextPosition.X, nextPosition.Y);
         }
 
         public List<Node> FindPath()
@@ -84,9 +85,10 @@
 
         private bool IsValid(int x, int y)
         {
-            bool containsX = x >= 0 && x < _map.GetLength(0);
-            bool containsY = y >= 0 && y < _map.GetLength(1);
-            bool isNotWall = _map[x, y] != '#';
+            char[,] map = GameData.GetInstance().GetMap();
+            bool containsX = x >= 0 && x < map.GetLength(0);
+            bool containsY = y >= 0 && y < map.GetLength(1);
+            bool isNotWall = map[x, y] != '#';
             return containsX && containsY && isNotWall;
         }
     }
