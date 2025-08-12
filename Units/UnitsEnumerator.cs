@@ -1,7 +1,6 @@
-﻿using MazeAStar.Units;
-using System.Collections;
+﻿using System.Collections;
 
-namespace MazeAStar
+namespace MazeAStar.Units
 {
     internal class UnitsEnumerator : IEnumerator
     {
