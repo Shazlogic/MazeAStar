@@ -1,54 +1,52 @@
-﻿using MazeAStar.Core;
+﻿using MazeAStar.Config;
+using MazeAStar.Core;
 using MazeAStar.Rendering;
 
 namespace MazeAStar.Units
 {
     public abstract class Unit
     {
-        public int X { get; private set; }
-        public int Y { get; private set; }
+        public Vector2 Position { get; private set; }
         private char _symbol;
         private ConsoleRenderer _renderer;
 
-        public Unit(int startX, int startY, char symbol, ConsoleRenderer renderer)
+        public Unit(Vector2 startPosition, char symbol, ConsoleRenderer renderer)
         {
-            X = startX;
-            Y = startY;
+            Position = startPosition;
             _symbol = symbol;
             _renderer = renderer;
 
-            _renderer.SetPixel(X, Y, _symbol);
+            _renderer.SetPixel(Position.X, Position.Y, _symbol);
         }
 
         public virtual bool TryMoveLeft()
         {
-            return TryChangePosition(X - 1, Y);
+            return TryChangePosition(new Vector2(Position.X - 1, Position.Y));
         }
 
         public virtual bool TryMoveRight()
         {
-            return TryChangePosition(X + 1, Y);
+            return TryChangePosition(new Vector2(Position.X + 1, Position.Y));
         }
 
         public virtual bool TryMoveUp()
         {
-            return TryChangePosition(X, Y - 1);
+            return TryChangePosition(new Vector2(Position.X, Position.Y - 1));
         }
 
         public virtual bool TryMoveDown()
         {
-            return TryChangePosition(X, Y + 1);
+            return TryChangePosition(new Vector2(Position.X, Position.Y + 1));
         }
 
-        protected virtual bool TryChangePosition(int newX, int newY)
+        protected virtual bool TryChangePosition(Vector2 newPosition)
         {
-            if (GameData.GetInstance().GetMap()[newX, newY] == '#')
+            if (GameData.GetInstance().GetMap()[newPosition.X, newPosition.Y] == '#')
                 return false;
 
-            _renderer.SetPixel(X, Y, ' ');
-            X = newX;
-            Y = newY;
-            _renderer.SetPixel(X, Y, _symbol);
+            _renderer.SetPixel(Position.X, Position.Y, ' ');
+            Position = newPosition;
+            _renderer.SetPixel(Position.X, Position.Y, _symbol);
 
             return true;
         }

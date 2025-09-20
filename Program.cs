@@ -3,7 +3,6 @@ using MazeAStar.Core;
 using MazeAStar.Input;
 using MazeAStar.Rendering;
 using MazeAStar.Units;
-using System.Threading.Tasks;
 
 namespace MazeAStar
 {
@@ -18,10 +17,10 @@ namespace MazeAStar
 
             InitializeMap(GameData.GetInstance().GetMap(), renderer);
 
-            var player = new Player(config.Player.X, config.Player.Y, renderer, input);
-            var obstacle = new VerticalObstacle(config.Obstacle.X, config.Obstacle.Y, config.Obstacle.Symbol, renderer);
-            var enemy = new SmartEnemy(config.Enemy.X, config.Enemy.Y, config.Enemy.Symbol, renderer, player);
-            var units = new List<Unit> { player, obstacle, enemy };
+            Player player = new Player(new Vector2(config.Player.X, config.Player.Y), renderer, input);
+            VerticalObstacle obstacle = new VerticalObstacle(new Vector2(config.Obstacle.X, config.Obstacle.Y), config.Obstacle.Symbol, renderer);
+            SmartEnemy enemy = new SmartEnemy(new Vector2(config.Enemy.X, config.Enemy.Y), config.Enemy.Symbol, renderer, player);
+            List<Unit> units = new List<Unit> { player, obstacle, enemy };
 
             renderer.Render();
 
@@ -70,7 +69,9 @@ namespace MazeAStar
         {
             foreach (var unit in units)
             {
-                if (unit != player && player.X == unit.X && player.Y == unit.Y)
+                if (unit == player) continue;
+
+                if (player.Position.Equals(unit.Position))
                 {
                     return true;
                 }

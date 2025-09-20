@@ -1,23 +1,23 @@
-﻿namespace MazeAStar.Core
+﻿using MazeAStar.Config;
+
+namespace MazeAStar.Core
 {
     public class Node
     {
-        public int X;
-        public int Y;
+        public Vector2 Position;
         public int Cost = 10;
         public int Estimate;
         public int Value;
         public Node? Parent;
 
-        public Node(int x, int y)
+        public Node(Vector2 position)
         {
-            X = x;
-            Y = y;
+            Position = position;
         }
 
-        public void CalculateEstimate(int targetX, int targetY)
+        public void CalculateEstimate(Vector2 targetPosition)
         {
-            Estimate = Math.Abs(X - targetX) + Math.Abs(Y - targetY);
+            Estimate = Math.Abs(Position.X - targetPosition.X) + Math.Abs(Position.Y - targetPosition.Y);
         }
 
         public void CalculateValue()
@@ -28,12 +28,12 @@
         public override bool Equals(object? obj)
         {
             if (obj is not Node node) return false;
-            return X == node.X && Y == node.Y;
+            return Position.Equals(node.Position);
         }
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(X, Y);
+            return HashCode.Combine(Position.X, Position.Y);
         }
     }
 }

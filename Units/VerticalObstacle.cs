@@ -6,8 +6,8 @@ namespace MazeAStar.Units
     {
         private bool _obstacleDownDir = true;
 
-        public VerticalObstacle(int startX, int startY, char symbol, ConsoleRenderer renderer) :
-            base(startX, startY, symbol, renderer)
+        public VerticalObstacle(Vector2 startPosition, char symbol, ConsoleRenderer renderer) :
+            base(startPosition, symbol, renderer)
         {
         }
 

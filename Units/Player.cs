@@ -5,7 +5,7 @@ namespace MazeAStar.Units
 {
     internal class Player : Unit
     {
-        public Player(int startX, int startY, ConsoleRenderer renderer, IMoveInput input) : base(startX, startY, '@', renderer)
+        public Player(Vector2 startPosition, ConsoleRenderer renderer, IMoveInput input) : base(startPosition, '@', renderer)
         {
             input.MoveUp += () => TryMoveUp();
             input.MoveDown += () => TryMoveDown();
