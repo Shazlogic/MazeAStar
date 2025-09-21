@@ -4,7 +4,7 @@ namespace MazeAStar.Units
 {
     internal class UnitCollection : IEnumerable
     {
-        private List<Unit> _units = new();
+        private HashSet<Unit> _units = new();
 
         public void Add(Unit unit)
         {
@@ -18,9 +18,9 @@ namespace MazeAStar.Units
 
         public IEnumerator GetEnumerator()
         {
-            for (int i = 0; i < _units.Count; i++)
+            foreach (Unit unit in _units)
             {
-                yield return _units[i];
+                yield return unit;
             }
         }
     }

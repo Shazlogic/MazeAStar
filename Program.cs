@@ -1,5 +1,4 @@
 ﻿using MazeAStar.Config;
-using MazeAStar.Core;
 using MazeAStar.Input;
 using MazeAStar.Rendering;
 using MazeAStar.Units;
@@ -12,15 +11,16 @@ namespace MazeAStar
         {
             var config = GameConfig.Load();
 
-            var renderer = new ConsoleRenderer();
-            var input = new ConsoleInput();
-
-            InitializeMap(GameData.GetInstance().GetMap(), renderer);
+            ConsoleRenderer renderer = new ConsoleRenderer();
+            ConsoleInput input = new ConsoleInput();
+            LevelsMenu levelsMenu = new LevelsMenu(input, renderer);
+            levelsMenu.SetMenu();
 
             Player player = new Player(new Vector2(config.Player.X, config.Player.Y), renderer, input);
             VerticalObstacle obstacle = new VerticalObstacle(new Vector2(config.Obstacle.X, config.Obstacle.Y), config.Obstacle.Symbol, renderer);
             SmartEnemy enemy = new SmartEnemy(new Vector2(config.Enemy.X, config.Enemy.Y), config.Enemy.Symbol, renderer, player);
             List<Unit> units = new List<Unit> { player, obstacle, enemy };
+            input.Esc += GameOver;
 
             renderer.Render();
 
@@ -44,17 +44,6 @@ namespace MazeAStar
             Console.Clear();
             Console.WriteLine("Game Over!");
             Environment.Exit(0);
-        }
-
-        private static void InitializeMap(char[,] map, ConsoleRenderer renderer)
-        {
-            for (int y = 0; y < map.GetLength(0); y++)
-            {
-                for (int x = 0; x < map.GetLength(1); x++)
-                {
-                    renderer.SetPixel(y, x, map[y, x]);
-                }
-            }
         }
 
         private static void UpdateUnits(IEnumerable<Unit> units)

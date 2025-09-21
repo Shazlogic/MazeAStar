@@ -1,11 +1,12 @@
 ﻿namespace MazeAStar.Input
 {
-    internal class ConsoleInput : IMoveInput
+    public class ConsoleInput : IMoveInput
     {
         public event Action MoveUp;
         public event Action MoveDown;
         public event Action MoveLeft;
         public event Action MoveRight;
+        public event Action Esc;
 
         public void Update()
         {
@@ -27,6 +28,9 @@
                         break;
                     case ConsoleKey.RightArrow:
                         MoveRight?.Invoke();
+                        break;
+                    case ConsoleKey.Escape:
+                        Esc?.Invoke();
                         break;
                 }
             }
